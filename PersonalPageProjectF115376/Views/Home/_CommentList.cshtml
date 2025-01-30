@@ -1,0 +1,14 @@
+﻿@foreach (var comment in Model)
+{
+    <div class="comment">
+        @if (comment.IsAnonymous)
+        {
+            <p><strong>@comment.Author (Anonymous)</strong> (@comment.Date):</p>
+        }
+        else
+        {
+            <p><strong>@comment.Author</strong> (@comment.Date):</p>
+        }
+        <p>@comment.Text</p>
+    </div>
+}

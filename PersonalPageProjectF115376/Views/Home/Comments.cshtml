@@ -1,0 +1,63 @@
+﻿@model PersonalPageProjectF115376.Models.CommentsViewModel
+
+@{
+    ViewData["Title"] = "Comments";
+}
+
+<h1>Comments</h1>
+
+<form asp-controller="Home" asp-action="SubmitComment" method="post" id="commentForm">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <input type="hidden" asp-for="NewComment.Author" value="@User.Identity.Name" name="NewComment.Author" />
+    }
+    else
+    {
+        <div class="form-group">
+            <label for="NewComment_Author">Your Name (Optional):</label>
+            <input asp-for="NewComment.Author" class="form-control" id="NewComment_Author" name="NewComment.Author" />
+            <span asp-validation-for="NewComment.Author" class="text-danger"></span>
+        </div>
+        <input type="hidden" asp-for="NewComment.Author" id="anonymousAuthor" value="" name="NewComment.Author" />
+    }
+
+    <div class="form-group">
+        <label asp-for="NewComment.Text">Comment:</label>
+        <textarea asp-for="NewComment.Text" class="form-control" name="NewComment.Text" required></textarea>
+        <span asp-validation-for="NewComment.Text" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Comment</button>
+</form>
+
+<hr /> @* Separator between form and comments *@
+
+@* Display comments *@
+@foreach (var comment in Model.ExistingComments)
+{
+    <div class="comment">
+        <p><strong>@comment.Author:</strong> @comment.Text</p>
+        <p class="date">@comment.Date</p>
+        @if (comment.User != null)
+        {
+            <p>Posted by: @comment.User.UserName</p>
+        }
+    </div>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        const authorInput = document.getElementById('NewComment_Author');
+        const hiddenInput = document.getElementById('anonymousAuthor');
+
+        if (authorInput) {
+            authorInput.addEventListener('input', () => {
+                hiddenInput.value = authorInput.value.trim() === '' ? 'Anonymous' : authorInput.value;
+            });
+        }
+    </script>
+}
